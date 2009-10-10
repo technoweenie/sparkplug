@@ -37,11 +37,7 @@ module Rack
             @cacher.save(data, @options[:spark])
           end
         end
-       [200, {
-          "Last-Modified"  => @cacher.updated_at.rfc822,
-          "Content-Type"   => "image/png",
-          "Content-Length" => @cacher.size.to_s
-        }, self]
+        @cacher.serve(self)
       else
         @app.call(env)
       end

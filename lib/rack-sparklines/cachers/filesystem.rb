@@ -1,26 +1,16 @@
-require 'rack-sparklines'
+require 'rack-sparklines/cachers/abstract'
 require 'fileutils'
-require 'time'
 
 class Rack::Sparklines
   module Cachers
     # Reads sparkline data from CSV files.  Only the first line of numbers are 
     # read.  Requests for "/sparks/stats.csv" will pass a data_path of "stats.csv"
-    class Filesystem
+    class Filesystem < Abstract
       attr_accessor :png_path
-      attr_accessor :directory
 
       def initialize(directory)
         @directory = directory
-        @size, @updated_at = nil
-      end
-
-      # Setting the png_path returns a duplicate of this object that has any
-      # custom instance variables (configuration settings, for example).
-      def set(png_path)
-        cacher = dup
-        cacher.png_path = png_path
-        cacher
+        super()
       end
 
       def png_path=(s)
