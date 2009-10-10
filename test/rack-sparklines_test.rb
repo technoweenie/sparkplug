@@ -41,4 +41,11 @@ class SparklinesTest < Test::Unit::TestCase
     get "/sparks/missing.csv.png"
     assert_equal 0, File.size(@missing_png)
   end
+
+  def test_lets_other_requests_fallthrough
+    assert !File.exist?(@missing_png)
+    get "/spark/missing.csv.png"
+    assert_equal 'booya', last_response.body
+    assert !File.exist?(@missing_png)
+  end
 end
