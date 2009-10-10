@@ -15,8 +15,8 @@ class Rack::Sparklines
         data
       end
 
-      def already_cached?(cache_file)
-        if cache_time = File.file?(cache_file) && File.mtime(cache_file)
+      def already_cached?(cacher)
+        if cache_time = cacher.exists? && cacher.updated_at
           cache_time > updated_at
         end
       end

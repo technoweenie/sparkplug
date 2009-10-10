@@ -1,5 +1,4 @@
 require 'spark_pr'
-require 'time'
 
 module Rack
   # Render sparkline graphs dynamically from datapoints in a matching CSV file 
@@ -8,11 +7,11 @@ module Rack
     DEFAULT_SPARK_OPTIONS = {:has_min => true, :has_max => true, 'has_last' => 'true', 'height' => '40', :step => 10, :normalize => 'logarithmic'}
 
     # Options:
-    #   :spark     - Hash of sparkline options.  See spark_pr.rb
-    #   :prefix    - URL prefix for handled requests.  Setting it to "/sparks"
+    #   :spark   - Hash of sparkline options.  See spark_pr.rb
+    #   :prefix  - URL prefix for handled requests.  Setting it to "/sparks"
     #     treats requests like "/sparks/stats.csv" as dynamic sparklines.
-    #   :directory - local directory that cached PNG files are stored.
-    #   :handler   - Handler instances know how to fetch data and pass them 
+    #   :cacher  - Cachers know how to store and stream sparkline PNG data.
+    #   :handler - Handler instances know how to fetch data and pass them 
     #     to the Sparklines library.
     def initialize(app, options = {})
       @app, @options   = app, options
@@ -27,23 +26,21 @@ module Rack
       if env['PATH_INFO'][@options[:prefix]] == @options[:prefix]
         @data_path = env['PATH_INFO'][@options[:prefix].size+1..-1]
         @data_path.sub! /\.png$/, ''
-        @png_path   = @data_path + ".png"
-        @cache_file = ::File.join(@options[:directory], @png_path)
-        @handler    = @options[:handler].set(@data_path)
+        @png_path = @data_path + ".png"
+        @cacher   = @options[:cacher].set(@png_path)
+        @handler  = @options[:handler].set(@data_path)
         if !@handler.exists?
           return @app.call(env)
         end
-        if !@handler.already_cached?(@cache_file)
+        if !@handler.already_cached?(@cacher)
           @handler.fetch do |data|
-            ::File.open(@cache_file, 'wb') do |png|
-              png << Spark.plot(data, @options[:spark])
-            end
+            @cacher.save(data, @options[:spark])
           end
         end
        [200, {
-          "Last-Modified"  => ::File.mtime(@cache_file).rfc822,
+          "Last-Modified"  => @cacher.updated_at.rfc822,
           "Content-Type"   => "image/png",
-          "Content-Length" => ::File.size(@cache_file).to_s
+          "Content-Length" => @cacher.size.to_s
         }, self]
       else
         @app.call(env)
@@ -51,11 +48,7 @@ module Rack
     end
 
     def each
-      ::File.open(@cache_file, "rb") do |file|
-        while part = file.read(8192)
-          yield part
-        end
-      end
+      @cacher.stream { |part| yield part }
     end
   end
 end

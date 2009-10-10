@@ -8,25 +8,27 @@ require 'rack/test'
 require 'rack-sparklines'
 require 'rack-sparklines/handlers/stubbed_data'
 require 'rack-sparklines/handlers/csv_data'
+require 'rack-sparklines/cachers/filesystem'
 
 class SparklinesTest < Test::Unit::TestCase
   include Rack::Test::Methods
 
-  $data_dir = File.join(File.dirname(__FILE__), 'data')
+  $data_dir     = File.join(File.dirname(__FILE__), 'data')
+  $stubbed_data = {:updated => Time.utc(2009, 1, 1), :contents => [47, 43, 24, 47, 16, 28, 38, 57, 50, 76, 42, 20, 98, 34, 53, 1, 55, 74, 63, 38, 31, 98, 89]}
   FileUtils.rm_rf   $data_dir
   FileUtils.mkdir_p $data_dir
   File.open File.join($data_dir, 'stats.csv'), 'wb' do |csv|
-    csv << "47,43,24,47,16,28,38,57,50,76,42,20,98,34,53,1,55,74,63,38,31,98,89"
+    csv << $stubbed_data[:contents].join(",")
   end
   sleep 1
 
   def app
-    stubbed_data = {:updated => Time.utc(2009, 1, 1), :contents => [47, 43, 24, 47, 16, 28, 38, 57, 50, 76, 42, 20, 98, 34, 53, 1, 55, 74, 63, 38, 31, 98, 89]}
+    
     Rack::Sparklines.new \
       Proc.new {|env| [200, {"Content-Type" => "text/html"}, "booya"] },
-      :handler   => Rack::Sparklines::Handlers::StubbedData.new('stats.csv' => stubbed_data),
-      :prefix    => '/sparks',
-      :directory => $data_dir
+      :handler => Rack::Sparklines::Handlers::StubbedData.new('stats.csv' => $stubbed_data),
+      :cacher  => Rack::Sparklines::Cachers::Filesystem.new($data_dir),
+      :prefix  => '/sparks'
   end
 
   def setup
@@ -66,8 +68,8 @@ class SparklinesCSVTest < SparklinesTest
   def app
     Rack::Sparklines.new \
       Proc.new {|env| [200, {"Content-Type" => "text/html"}, "booya"] },
-      :handler   => Rack::Sparklines::Handlers::CsvData.new($data_dir),
-      :prefix    => '/sparks',
-      :directory => $data_dir
+      :handler => Rack::Sparklines::Handlers::CsvData.new($data_dir),
+      :cacher  => Rack::Sparklines::Cachers::Filesystem.new($data_dir),
+      :prefix  => '/sparks'
   end
 end
