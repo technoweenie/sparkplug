@@ -5,21 +5,27 @@ class Rack::Sparklines
     # Abstract class for retrieving the data and determining whether the cache
     # needs to be refreshed.
     class AbstractData
-      def initialize(data_path)
-        @data_path = data_path
+      attr_accessor :data_path
+
+      # Setting the data_path returns a duplicate of this object that has any
+      # custom instance variables (configuration settings, for example).
+      def set(data_path)
+        data = dup
+        data.data_path = data_path
+        data
       end
 
       def already_cached?(cache_file)
         if cache_time = File.file?(cache_file) && File.mtime(cache_file)
-          cache_time > data_updated_at
+          cache_time > updated_at
         end
       end
 
-      def data_exists?
+      def exists?
         false
       end
 
-      def data_updated_at
+      def updated_at
         raise NotImplementedError
       end
 

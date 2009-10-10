@@ -4,20 +4,22 @@ module Rack::Sparklines::Handlers
   # Reads sparkline data from CSV files.  Only the first line of numbers are 
   # read.  Requests for "/sparks/stats.csv" will pass a data_path of "stats.csv"
   class CsvData < AbstractData
-    class << self
-      attr_accessor :directory
+    attr_accessor :directory
+
+    def initialize(directory)
+      @directory = directory
     end
 
-    def initialize(data_path)
-      @data_path = File.join(self.class.directory, data_path)
+    def data_path=(s)
+      @data_path = s ? File.join(@directory, s) : nil
     end
 
-    def data_exists?
+    def exists?
       File.exist?(@data_path)
     end
 
-    def data_updated_at
-      File.mtime @data_path
+    def updated_at
+      File.mtime(@data_path)
     end
 
     def fetch

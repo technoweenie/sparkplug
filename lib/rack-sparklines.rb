@@ -12,7 +12,7 @@ module Rack
     #   :prefix    - URL prefix for handled requests.  Setting it to "/sparks"
     #     treats requests like "/sparks/stats.csv" as dynamic sparklines.
     #   :directory - local directory that cached PNG files are stored.
-    #   :handler   - Handler classes know how to fetch data and pass them 
+    #   :handler   - Handler instances know how to fetch data and pass them 
     #     to the Sparklines library.
     def initialize(app, options = {})
       @app, @options   = app, options
@@ -29,13 +29,13 @@ module Rack
         @data_path.sub! /\.png$/, ''
         @png_path   = @data_path + ".png"
         @cache_file = ::File.join(@options[:directory], @png_path)
-        @handler    = @options[:handler].new(@data_path)
-        if !@handler.data_exists?
+        @handler    = @options[:handler].set(@data_path)
+        if !@handler.exists?
           return @app.call(env)
         end
         if !@handler.already_cached?(@cache_file)
           @handler.fetch do |data|
-            ::File.open(@cache_file, 'wb' ) do |png|
+            ::File.open(@cache_file, 'wb') do |png|
               png << Spark.plot(data, @options[:spark])
             end
           end
