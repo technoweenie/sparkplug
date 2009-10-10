@@ -20,10 +20,9 @@ class SparklinesTest < Test::Unit::TestCase
   File.open File.join($data_dir, 'stats.csv'), 'wb' do |csv|
     csv << $stubbed_data[:contents].join(",")
   end
-  sleep 1
+  sleep 1 # so that the timestamps don't match in the cache check test below
 
   def app
-    
     Rack::Sparklines.new \
       Proc.new {|env| [200, {"Content-Type" => "text/html"}, "booya"] },
       :handler => Rack::Sparklines::Handlers::StubbedData.new('stats.csv' => $stubbed_data),
