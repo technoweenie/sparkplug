@@ -1,0 +1,7 @@
+= rack-sparklines
+
+Description goes here.
+
+== Copyright
+
+Copyright (c) 2009 rick. See LICENSE for details.
