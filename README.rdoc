@@ -23,6 +23,11 @@ Mix and match your own handlers and cachers with your friends!
 == Demo
 
 See demo/sparkline_demo.rb
+Or http://rack-sparklines.heroku.com/
+
+== Codes
+
+http://github.com/technoweenie/rack-sparklines
 
 == Copyright
 
