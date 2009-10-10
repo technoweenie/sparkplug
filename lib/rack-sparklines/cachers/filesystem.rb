@@ -1,4 +1,5 @@
 require 'rack-sparklines'
+require 'fileutils'
 require 'time'
 
 class Rack::Sparklines
@@ -40,6 +41,7 @@ class Rack::Sparklines
       end
 
       def save(data, options)
+        FileUtils.mkdir_p(File.dirname(@cache_file))
         File.open(@cache_file, 'wb') do |png|
           png << Spark.plot(data, options)
         end
