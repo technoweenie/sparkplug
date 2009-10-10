@@ -4,3 +4,4 @@ coverage
 rdoc
 pkg
 test/data
+demo/public/sparks/*

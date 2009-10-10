@@ -1,6 +1,28 @@
 = rack-sparklines
 
-Description goes here.
+Dynamically generates sparkline graphs from a set of numbers.  This is done
+primarily through Handlers and Cachers.  Handlers know how to fetch the data,
+and Cachers know how to cache the generated PNG sparkline for future requests.
+
+    pub_dir   = File.expand_path(File.join(File.dirname(__FILE__), 'public'))
+    data_dir  = File.join(pub_dir, 'temps')
+    cache_dir = File.join(pub_dir, 'sparks')
+    
+    use Rack::Sparklines, :prefix => 'sparks',
+      :handler => Rack::Sparklines::Handlers::CsvData.new(data_dir),
+      :cacher  => Rack::Sparklines::Cachers::Filesystem.new(cache_dir)
+
+* An incoming request hits your Rack application at "/sparks/foo/stats.csv".  
+* The CSV Handler gets 'foo/stats.csv', and checks for this file in its data 
+  directory.  It parses the first row of numbers as the set of points to plot.
+* The Filesystem Cacher checks for a more recent cache.  Failing that, it 
+  generates the PNG graph and writes it to the cache directory.
+
+Mix and match your own handlers and cachers with your friends!
+
+== Demo
+
+See demo/sparkline_demo.rb
 
 == Copyright
 
