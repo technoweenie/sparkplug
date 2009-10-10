@@ -17,7 +17,7 @@ module Rack
       end
 
       def fetch
-        yield @data[:contents]
+        yield @data[:contents] if @data
       end
     end
   end

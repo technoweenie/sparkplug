@@ -34,11 +34,13 @@ class SparklinesTest < Test::Unit::TestCase
     get "/sparks/missing.csv.png"
     assert  File.exist?(@missing_png)
     assert  File.size(@missing_png) > 0
+    assert_equal IO.read(@missing_png), last_response.body
   end
 
   def test_leaves_recent_cached_png
     FileUtils.touch(@missing_png)
     get "/sparks/missing.csv.png"
+    assert_equal '', last_response.body
     assert_equal 0, File.size(@missing_png)
   end
 
