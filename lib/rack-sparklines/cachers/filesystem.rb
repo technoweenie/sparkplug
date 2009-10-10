@@ -6,7 +6,7 @@ class Rack::Sparklines
     # Reads sparkline data from CSV files.  Only the first line of numbers are 
     # read.  Requests for "/sparks/stats.csv" will pass a data_path of "stats.csv"
     class Filesystem < Abstract
-      attr_accessor :png_path
+      attr_accessor :directory
 
       def initialize(directory)
         @directory = directory
@@ -33,7 +33,7 @@ class Rack::Sparklines
       def save(data, options)
         FileUtils.mkdir_p(File.dirname(@cache_file))
         File.open(@cache_file, 'wb') do |png|
-          png << Spark.plot(data, options)
+          png << create_sparklines(data, options)
         end
       end
 

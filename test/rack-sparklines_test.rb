@@ -9,23 +9,24 @@ require 'rack-sparklines'
 require 'rack-sparklines/handlers/stubbed_data'
 require 'rack-sparklines/handlers/csv_data'
 require 'rack-sparklines/cachers/filesystem'
+require 'rack-sparklines/cachers/memory'
 
 class SparklinesTest < Test::Unit::TestCase
   include Rack::Test::Methods
 
   $data_dir     = File.join(File.dirname(__FILE__), 'data')
-  $stubbed_data = {:updated => Time.utc(2009, 1, 1), :contents => [47, 43, 24, 47, 16, 28, 38, 57, 50, 76, 42, 20, 98, 34, 53, 1, 55, 74, 63, 38, 31, 98, 89]}
+  $stubbed_data = [47, 43, 24, 47, 16, 28, 38, 57, 50, 76, 42, 20, 98, 34, 53, 1, 55, 74, 63, 38, 31, 98, 89]
   FileUtils.rm_rf   $data_dir
   FileUtils.mkdir_p $data_dir
   File.open File.join($data_dir, 'stats.csv'), 'wb' do |csv|
-    csv << $stubbed_data[:contents].join(",")
+    csv << $stubbed_data.join(",")
   end
   sleep 1 # so that the timestamps don't match in the cache check test below
 
   def app
     Rack::Sparklines.new \
       Proc.new {|env| [200, {"Content-Type" => "text/html"}, "booya"] },
-      :handler => Rack::Sparklines::Handlers::StubbedData.new('stats.csv' => $stubbed_data),
+      :handler => Rack::Sparklines::Handlers::StubbedData.new('stats.csv' => {:updated => Time.utc(2009, 1, 1), :contents => $stubbed_data.dup}),
       :cacher  => Rack::Sparklines::Cachers::Filesystem.new($data_dir),
       :prefix  => '/sparks'
   end
@@ -70,5 +71,24 @@ class SparklinesCSVTest < SparklinesTest
       :handler => Rack::Sparklines::Handlers::CsvData.new($data_dir),
       :cacher  => Rack::Sparklines::Cachers::Filesystem.new($data_dir),
       :prefix  => '/sparks'
+  end
+end
+
+class SparklinesMemoryTest < SparklinesTest
+  def app
+    Rack::Sparklines.new \
+      Proc.new {|env| [200, {"Content-Type" => "text/html"}, "booya"] },
+      :handler => Rack::Sparklines::Handlers::StubbedData.new('stats.csv' => {:updated => Time.utc(2009, 1, 1), :contents => $stubbed_data.dup}),
+      :cacher  => Rack::Sparklines::Cachers::Memory.new,
+      :prefix  => '/sparks'
+  end
+
+  def test_creates_png_from_csv_request
+    get "/sparks/stats.csv.png"
+    assert_equal 1121, last_response.body.size
+  end
+
+  def test_leaves_recent_cached_png
+    # useless test for memory cacher
   end
 end

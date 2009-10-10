@@ -32,6 +32,10 @@ class Rack::Sparklines
         raise NotImplementedError
       end
 
+      def create_sparklines(data, options)
+        Spark.plot(data, options)
+      end
+
       def serve(app, headers = {})
         headers = {
           "Last-Modified"  => updated_at.rfc822,
