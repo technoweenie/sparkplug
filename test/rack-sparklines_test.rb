@@ -14,7 +14,7 @@ class SparklinesTest < Test::Unit::TestCase
   $data_dir = File.join(File.dirname(__FILE__), 'data')
   FileUtils.rm_rf   $data_dir
   FileUtils.mkdir_p $data_dir
-  Rack::Sparklines::StubbedData.data['missing.csv'] = [47, 43, 24, 47, 16, 28, 38, 57, 50, 76, 42, 20, 98, 34, 53, 1, 55, 74, 63, 38, 31, 98, 89]
+  Rack::Sparklines::StubbedData.data['missing.csv'] = {:updated => Time.utc(2009, 1, 1), :contents => [47, 43, 24, 47, 16, 28, 38, 57, 50, 76, 42, 20, 98, 34, 53, 1, 55, 74, 63, 38, 31, 98, 89]}
 
   def app
     Rack::Sparklines.new \
@@ -24,9 +24,21 @@ class SparklinesTest < Test::Unit::TestCase
       :directory => $data_dir
   end
 
+  def setup
+    @missing_png = File.join($data_dir, 'missing.csv.png')
+    FileUtils.rm_rf @missing_png
+  end
+
   def test_creates_png_from_csv_request
-    assert !File.exist?(File.join($data_dir, 'missing.csv.png'))
+    assert !File.exist?(@missing_png)
     get "/sparks/missing.csv.png"
-    assert  File.exist?(File.join($data_dir, 'missing.csv.png'))
+    assert  File.exist?(@missing_png)
+    assert  File.size(@missing_png) > 0
+  end
+
+  def test_leaves_recent_cached_png
+    FileUtils.touch(@missing_png)
+    get "/sparks/missing.csv.png"
+    assert_equal 0, File.size(@missing_png)
   end
 end

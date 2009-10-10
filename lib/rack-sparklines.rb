@@ -12,9 +12,11 @@ module Rack
         png_path   = data_path + ".png"
         cache_file = ::File.join(@options[:directory], png_path)
         handler    = @options[:handler].new(data_path)
-        handler.fetch do |data|
-          ::File.open(cache_file, 'wb' ) do |png|
-            png << Spark.plot(data, :has_min => true, :has_max => true, 'has_last' => 'true', 'height' => '40', :step => 10, :normalize => 'logarithmic')
+        if !handler.already_cached?(cache_file)
+          handler.fetch do |data|
+            ::File.open(cache_file, 'wb' ) do |png|
+              png << Spark.plot(data, :has_min => true, :has_max => true, 'has_last' => 'true', 'height' => '40', :step => 10, :normalize => 'logarithmic')
+            end
           end
         end
         @app.call(env)
