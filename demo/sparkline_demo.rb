@@ -4,7 +4,7 @@ require 'sinatra'
 
 require 'rack-sparklines'
 require 'rack-sparklines/handlers/csv_data'
-require 'rack-sparklines/cachers/filesystem'
+require 'rack-sparklines/cachers/memory'
 
 pub_dir = File.expand_path(File.join(File.dirname(__FILE__), 'public'))
 use Rack::Sparklines, :prefix => 'sparks',
