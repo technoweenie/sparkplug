@@ -12,6 +12,10 @@ class Rack::Sparklines
         end
       end
 
+      def data_exists?
+        false
+      end
+
       def data_updated_at
         raise NotImplementedError
       end

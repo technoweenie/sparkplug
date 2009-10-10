@@ -56,6 +56,11 @@ class SparklinesTest < Test::Unit::TestCase
     assert_equal 'booya', last_response.body
     assert !File.exist?(@missing_png)
   end
+
+  def test_passes_missing_data_requests_through
+    get "/sparks/404.csv.png"
+    assert_equal 'booya', last_response.body
+  end
 end
 
 class SparklinesCSVTest < SparklinesTest

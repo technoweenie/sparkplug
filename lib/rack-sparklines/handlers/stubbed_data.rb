@@ -11,6 +11,10 @@ module Rack::Sparklines::Handlers
       @data = self.class.data[data_path]
     end
 
+    def data_exists?
+      @data
+    end
+
     def data_updated_at
       @data[:updated]
     end

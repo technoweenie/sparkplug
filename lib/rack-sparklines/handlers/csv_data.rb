@@ -9,6 +9,10 @@ module Rack::Sparklines::Handlers
       @data_path = File.join(self.class.directory, data_path)
     end
 
+    def data_exists?
+      File.exist?(@data_path)
+    end
+
     def data_updated_at
       File.mtime @data_path
     end

@@ -17,6 +17,9 @@ module Rack
         @png_path   = @data_path + ".png"
         @cache_file = ::File.join(@options[:directory], @png_path)
         @handler    = @options[:handler].new(@data_path)
+        if !@handler.data_exists?
+          return @app.call(env)
+        end
         if !@handler.already_cached?(@cache_file)
           @handler.fetch do |data|
             ::File.open(@cache_file, 'wb' ) do |png|
