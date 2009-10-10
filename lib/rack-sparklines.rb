@@ -1,9 +1,22 @@
 require 'spark_pr'
 require 'time'
+
 module Rack
+  # Render sparkline graphs dynamically from datapoints in a matching CSV file 
+  # (or anything that there is a Handler for).
   class Sparklines
+    DEFAULT_SPARK_OPTIONS = {:has_min => true, :has_max => true, 'has_last' => 'true', 'height' => '40', :step => 10, :normalize => 'logarithmic'}
+
+    # Options:
+    #   :spark     - Hash of sparkline options.  See spark_pr.rb
+    #   :prefix    - URL prefix for handled requests.  Setting it to "/sparks"
+    #     treats requests like "/sparks/stats.csv" as dynamic sparklines.
+    #   :directory - local directory that cached PNG files are stored.
+    #   :handler   - Handler classes know how to fetch data and pass them 
+    #     to the Sparklines library.
     def initialize(app, options = {})
-      @app, @options = app, options
+      @app, @options   = app, options
+      @options[:spark] = DEFAULT_SPARK_OPTIONS.merge(@options[:spark] || {})
     end
 
     def call(env)
@@ -23,7 +36,7 @@ module Rack
         if !@handler.already_cached?(@cache_file)
           @handler.fetch do |data|
             ::File.open(@cache_file, 'wb' ) do |png|
-              png << Spark.plot(data, :has_min => true, :has_max => true, 'has_last' => 'true', 'height' => '40', :step => 10, :normalize => 'logarithmic')
+              png << Spark.plot(data, @options[:spark])
             end
           end
         end

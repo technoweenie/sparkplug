@@ -1,6 +1,9 @@
 require 'rack-sparklines'
+
 class Rack::Sparklines
   module Handlers
+    # Abstract class for retrieving the data and determining whether the cache
+    # needs to be refreshed.
     class AbstractData
       def initialize(data_path)
         @data_path = data_path
@@ -20,6 +23,7 @@ class Rack::Sparklines
         raise NotImplementedError
       end
 
+      # Yield an array of numbers for sparkline datapoints.
       def fetch
         raise NotImplementedError
       end
