@@ -4,7 +4,7 @@ module Rack
   # Render sparkline graphs dynamically from datapoints in a matching CSV file 
   # (or anything that there is a Handler for).
   class Sparklines
-    DEFAULT_SPARK_OPTIONS = {:has_min => true, :has_max => true, 'has_last' => 'true', 'height' => '40', :step => 10, :normalize => 'logarithmic'}
+    DEFAULT_SPARK_OPTIONS = {:has_min => true, :has_max => true, :height => 40, :step => 10}
 
     # Options:
     #   :spark   - Hash of sparkline options.  See spark_pr.rb
