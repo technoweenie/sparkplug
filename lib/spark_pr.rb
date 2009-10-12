@@ -119,7 +119,11 @@ module Spark
   def Spark.normalize( arr, type = :linear )
     arr.map!{|v| Math.log(v) } if type == :logarithmic
     adj, fac = arr.min, arr.max-arr.min
-    arr.map {|v| (v-adj).quo(fac) rescue 0 }
+    arr.map do |v| 
+      v = (v-adj).quo(fac) rescue 0
+      v = 0 if v.respond_to?(:nan?) && v.nan?
+      v
+    end
   end
   
   def Spark.process_options( options )
