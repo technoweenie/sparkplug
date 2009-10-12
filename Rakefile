@@ -5,7 +5,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "rack-sparklines"
-    gem.summary = %Q{TODO}
+    gem.summary = %Q{Rack module that dynamically generates sparkline graphs from a set of numbers.}
     gem.email = "technoweenie@gmail.com"
     gem.homepage = "http://github.com/technoweenie/rack-sparklines"
     gem.authors = ["rick"]
