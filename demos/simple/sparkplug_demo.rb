@@ -1,4 +1,4 @@
-$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
+$LOAD_PATH << File.join(File.dirname(__FILE__), '..', '..', 'lib')
 require 'rubygems'
 require 'sinatra'
 
@@ -26,4 +26,4 @@ def simple_format(text)
   text << "</p>"
 end
 
-$readme = simple_format IO.read(File.join(File.dirname(__FILE__), '..', 'README.rdoc'))
+$readme = simple_format IO.read(File.join(File.dirname(__FILE__), '..', '..', 'README.rdoc'))

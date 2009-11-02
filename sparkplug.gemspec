@@ -1,12 +1,12 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{Sparkplug}
-  s.version = "1.1.0"
+  s.name = %q{sparkplug}
+  s.version = "2.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["rick"]
-  s.date = %q{2009-10-11}
+  s.date = %q{2009-11-01}
   s.email = %q{technoweenie@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -19,27 +19,27 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
-     "demo/public/temps/portland/2007.csv",
-     "demo/sparkline_demo.rb",
-     "demo/views/readme.erb",
-     "lib/rack-sparklines.rb",
-     "lib/rack-sparklines/cachers/abstract.rb",
-     "lib/rack-sparklines/cachers/filesystem.rb",
-     "lib/rack-sparklines/cachers/memory.rb",
-     "lib/rack-sparklines/handlers/abstract_data.rb",
-     "lib/rack-sparklines/handlers/csv_data.rb",
-     "lib/rack-sparklines/handlers/stubbed_data.rb",
+     "demos/simple/public/temps/portland/2007.csv",
+     "demos/simple/sparkplug_demo.rb",
+     "demos/simple/views/readme.erb",
      "lib/spark_pr.rb",
-     "rack-sparklines.gemspec",
-     "test/rack-sparklines_test.rb"
+     "lib/sparkplug.rb",
+     "lib/sparkplug/cachers/abstract.rb",
+     "lib/sparkplug/cachers/filesystem.rb",
+     "lib/sparkplug/cachers/memory.rb",
+     "lib/sparkplug/handlers/abstract_data.rb",
+     "lib/sparkplug/handlers/csv_data.rb",
+     "lib/sparkplug/handlers/stubbed_data.rb",
+     "sparkplug.gemspec",
+     "test/sparkplug_test.rb"
   ]
-  s.homepage = %q{http://github.com/technoweenie/rack-sparklines}
+  s.homepage = %q{http://github.com/technoweenie/sparkplug}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.4}
   s.summary = %q{Rack module that dynamically generates sparkline graphs from a set of numbers.}
   s.test_files = [
-    "test/rack-sparklines_test.rb"
+    "test/sparkplug_test.rb"
   ]
 
   if s.respond_to? :specification_version then
