@@ -1,6 +1,6 @@
-require 'rack-sparklines/handlers/abstract_data'
+require 'sparkplug/handlers/abstract_data'
 
-module Rack::Sparklines::Handlers
+module Sparkplug::Handlers
   # Reads sparkline data from CSV files.  Only the first line of numbers are 
   # read.  Requests for "/sparks/stats.csv" will pass a data_path of "stats.csv"
   class CsvData < AbstractData

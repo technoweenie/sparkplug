@@ -1,4 +1,4 @@
-= rack-sparklines
+= sparkplug
 
 Dynamically generates sparkline graphs from a set of numbers.  This is done
 primarily through Handlers and Cachers.  Handlers know how to fetch the data,
@@ -8,9 +8,9 @@ and Cachers know how to cache the generated PNG sparkline for future requests.
     data_dir  = File.join(pub_dir, 'temps')
     cache_dir = File.join(pub_dir, 'sparks')
     
-    use Rack::Sparklines, :prefix => 'sparks',
-      :handler => Rack::Sparklines::Handlers::CsvData.new(data_dir),
-      :cacher  => Rack::Sparklines::Cachers::Filesystem.new(cache_dir)
+    use Sparkplug, :prefix => 'sparks',
+      :handler => Sparkplug::Handlers::CsvData.new(data_dir),
+      :cacher  => Sparkplug::Cachers::Filesystem.new(cache_dir)
 
 * An incoming request hits your Rack application at "/sparks/foo/stats.csv".  
 * The CSV Handler gets 'foo/stats.csv', and checks for this file in its data 
@@ -22,13 +22,13 @@ Mix and match your own handlers and cachers with your friends!
 
 == Demo
 
-See demo/sparkline_demo.rb or http://rack-sparklines.heroku.com/
+See demo/sparkplug_demo.rb or http://rack-sparklines.heroku.com/
 
 == Codes
 
-gem install rack-sparklines
+gem install sparkplug
 
-http://github.com/technoweenie/rack-sparklines
+http://github.com/technoweenie/sparkplug
 
 == Copyright
 

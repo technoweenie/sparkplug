@@ -1,7 +1,7 @@
-require 'rack-sparklines/cachers/abstract'
+require 'sparkplug/cachers/abstract'
 require 'fileutils'
 
-class Rack::Sparklines
+class Sparkplug
   module Cachers
     # Reads sparkline data from CSV files.  Only the first line of numbers are 
     # read.  Requests for "/sparks/stats.csv" will pass a data_path of "stats.csv"
