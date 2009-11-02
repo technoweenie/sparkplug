@@ -9,7 +9,7 @@ require 'sparkplug/cachers/filesystem'
 pub_dir = File.expand_path(File.join(File.dirname(__FILE__), 'public'))
 use Sparkplug, :prefix => 'sparks',
   :handler => Sparkplug::Handlers::CsvData.new(File.join(pub_dir, 'temps')),
-  :cacher  => Rack::Sparklines::Cachers::Memory.new
+  :cacher  => Sparkplug::Cachers::Memory.new
 
 get '/' do
   @body = $readme
