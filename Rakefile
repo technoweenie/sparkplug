@@ -4,10 +4,10 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "rack-sparklines"
+    gem.name = "sparkplug"
     gem.summary = %Q{Rack module that dynamically generates sparkline graphs from a set of numbers.}
     gem.email = "technoweenie@gmail.com"
-    gem.homepage = "http://github.com/technoweenie/rack-sparklines"
+    gem.homepage = "http://github.com/technoweenie/sparkplug"
     gem.authors = ["rick"]
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
@@ -49,7 +49,7 @@ Rake::RDocTask.new do |rdoc|
   end
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "rack-sparklines #{version}"
+  rdoc.title = "sparkplug #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

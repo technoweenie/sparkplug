@@ -1,6 +1,6 @@
-require 'rack-sparklines'
+require 'sparkplug'
 
-class Rack::Sparklines
+class Sparkplug
   module Handlers
     # Abstract class for retrieving the data and determining whether the cache
     # needs to be refreshed.

@@ -1,7 +1,7 @@
-require 'rack-sparklines'
+require 'sparkplug'
 require 'time'
 
-class Rack::Sparklines
+class Sparkplug
   module Cachers
     # Reads sparkline data from CSV files.  Only the first line of numbers are 
     # read.  Requests for "/sparks/stats.csv" will pass a data_path of "stats.csv"

@@ -1,6 +1,6 @@
-require 'rack-sparklines/handlers/abstract_data'
+require 'sparkplug/handlers/abstract_data'
 
-module Rack::Sparklines::Handlers
+module Sparkplug::Handlers
   # Allows you to stub sparkline data in a global hash.  Requests for 
   # "/sparks/stats.csv" will pass a data_path of "stats.csv"
   class StubbedData < AbstractData

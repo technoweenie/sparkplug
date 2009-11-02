@@ -5,13 +5,13 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rack'
 require 'rack/test'
-require 'rack-sparklines'
-require 'rack-sparklines/handlers/stubbed_data'
-require 'rack-sparklines/handlers/csv_data'
-require 'rack-sparklines/cachers/filesystem'
-require 'rack-sparklines/cachers/memory'
+require 'sparkplug'
+require 'sparkplug/handlers/stubbed_data'
+require 'sparkplug/handlers/csv_data'
+require 'sparkplug/cachers/filesystem'
+require 'sparkplug/cachers/memory'
 
-class SparklinesTest < Test::Unit::TestCase
+class SparkplugTest < Test::Unit::TestCase
   include Rack::Test::Methods
 
   $data_dir     = File.join(File.dirname(__FILE__), 'data')
@@ -24,10 +24,10 @@ class SparklinesTest < Test::Unit::TestCase
   sleep 1 # so that the timestamps don't match in the cache check test below
 
   def app
-    Rack::Sparklines.new \
+    Sparkplug.new \
       Proc.new {|env| [200, {"Content-Type" => "text/html"}, "booya"] },
-      :handler => Rack::Sparklines::Handlers::StubbedData.new('stats.csv' => {:updated => Time.utc(2009, 1, 1), :contents => $stubbed_data.dup}),
-      :cacher  => Rack::Sparklines::Cachers::Filesystem.new($data_dir),
+      :handler => Sparkplug::Handlers::StubbedData.new('stats.csv' => {:updated => Time.utc(2009, 1, 1), :contents => $stubbed_data.dup}),
+      :cacher  => Sparkplug::Cachers::Filesystem.new($data_dir),
       :prefix  => '/sparks'
   end
 
@@ -64,28 +64,28 @@ class SparklinesTest < Test::Unit::TestCase
   end
 end
 
-class SparklinesCSVTest < SparklinesTest
+class SparkplugCSVTest < SparkplugTest
   def app
-    Rack::Sparklines.new \
+    Sparkplug.new \
       Proc.new {|env| [200, {"Content-Type" => "text/html"}, "booya"] },
-      :handler => Rack::Sparklines::Handlers::CsvData.new($data_dir),
-      :cacher  => Rack::Sparklines::Cachers::Filesystem.new($data_dir),
+      :handler => Sparkplug::Handlers::CsvData.new($data_dir),
+      :cacher  => Sparkplug::Cachers::Filesystem.new($data_dir),
       :prefix  => '/sparks'
   end
 end
 
-class SparklinesMemoryTest < SparklinesTest
+class SparkplugMemoryTest < SparkplugTest
   def app
-    Rack::Sparklines.new \
+    Sparkplug.new \
       Proc.new {|env| [200, {"Content-Type" => "text/html"}, "booya"] },
-      :handler => Rack::Sparklines::Handlers::StubbedData.new('stats.csv' => {:updated => Time.utc(2009, 1, 1), :contents => $stubbed_data.dup}),
-      :cacher  => Rack::Sparklines::Cachers::Memory.new,
+      :handler => Sparkplug::Handlers::StubbedData.new('stats.csv' => {:updated => Time.utc(2009, 1, 1), :contents => $stubbed_data.dup}),
+      :cacher  => Sparkplug::Cachers::Memory.new,
       :prefix  => '/sparks'
   end
 
   def test_creates_png_from_csv_request
     get "/sparks/stats.csv.png"
-    assert_equal 1121, last_response.body.size
+    assert_equal 1503, last_response.body.size
   end
 
   def test_leaves_recent_cached_png
