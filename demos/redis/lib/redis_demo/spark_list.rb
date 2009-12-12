@@ -2,15 +2,22 @@ module RedisDemo
   # Persists sparkline data to Redis.  Data is pushed and popped from a Redis list.
   class SparkList
     attr_reader :redis
+    attr_accessor :prefix, :limit
 
-    def initialize(connection_options = {})
-      @redis = Redis.new(connection_options)
+    # SparkList options
+    #   :prefix => 'plug'
+    #   :limit  => 50
+    #   :redis  => {} # passed to Redis
+    def initialize(options = {})
+      @prefix = options[:prefix] || 'plug'
+      @limit  = options[:limit]  || 50
+      @redis  = Redis.new(options[:redis] || {})
     end
 
     # convert a simple plug name to a full plug name
     def plug_name(plug, *extras)
-      s = "plug:#{plug}:"
-      extras.each { |e| s << e.to_s << ':' }
+      s = "#{@prefix}:#{plug}"
+      extras.each { |e| s << ':' << e.to_s }
       s
     end
 
@@ -23,14 +30,14 @@ module RedisDemo
     # pass a simple plug name
     def datapoints_for(name)
       plug = plug_name(name)
-      @redis.lrange(plug, 0, 49).map! { |p| p.to_i }
+      @redis.lrange(plug, 0, @limit-1).map! { |p| p.to_i }
     end
 
     # pass a simple plug name
     def add_datapoint(name, value)
       plug = plug_name(name)
       @redis.rpush(plug, value.to_i)
-      excess = count_for(plug) - 50
+      excess = count_for(plug) - @limit
       if excess > 0
         excess.times { @redis.lpop(plug) }
       end
