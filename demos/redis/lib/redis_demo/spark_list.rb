@@ -14,51 +14,68 @@ module RedisDemo
       @redis  = Redis.new(options[:redis] || {})
     end
 
-    # convert a simple plug name to a full plug name
-    def plug_name(plug, *extras)
-      s = "#{@prefix}:#{plug}"
-      extras.each { |e| s << ':' << e.to_s }
-      s
+    def find(name)
+      Plug.new(self, name)
+    end
+  end
+
+  # represents a list of datapoints
+  class Plug
+    def initialize(list, name)
+      @list  = list
+      @redis = @list.redis
+      @name  = name
+      @name_key = @updated_key = nil
     end
 
-    # pass a simple plug name
-    def delete(name)
-      @redis.delete plug_name(name)
-      @redis.delete plug_name(name, :updated)
-    end
-
-    # pass a simple plug name
-    def datapoints_for(name)
-      plug = plug_name(name)
-      @redis.lrange(plug, 0, @limit-1).map! { |p| p.to_i }
-    end
-
-    # pass a simple plug name
-    def add_datapoint(name, value)
-      plug = plug_name(name)
-      @redis.rpush(plug, value.to_i)
-      excess = count_for(plug) - @limit
+    def add(value)
+      @redis.rpush(name_key, value.to_i)
+      excess = count - @list.limit
       if excess > 0
-        excess.times { @redis.lpop(plug) }
+        excess.times { @redis.lpop(name_key) }
       end
-      @redis.set(plug_name(name, :updated), Time.now.utc.to_s)
+      self.updated_at = Time.now.utc
     end
 
-    # pass a simple plug name
-    def updated_at_for(plug)
-      value = @redis.get plug_name(plug, :updated)
+    def datapoints
+      @redis.lrange(name_key, 0, @list.limit-1).map! { |p| p.to_i }
+    end
+
+    def updated_at
+      value = @redis.get(updated_key)
       value.nil? ? Time.now.utc : Time.parse(value)
     end
 
-    # pass a simple plug name
-    def exists?(name)
-      plug = plug_name(name)
-      !count_for(plug).zero?
+    def updated_at=(v)
+      @redis.set(updated_key, v.to_s)
     end
 
-    # pass a full plug name
-    def count_for(plug)
-      @redis.llen(plug)
+    def delete
+      @redis.delete(name_key)
+      @redis.delete(updated_key)
+    end
+
+    def exists?
+      count > 0
+    end
+
+    def count
+      @redis.llen(name_key)
+    end
+
+    def name_key
+      @name_key ||= plug_name(@name)
+    end
+
+    def updated_key
+      @updated_key ||= plug_name(@name, :updated)
+    end
+
+    # convert a simple plug name to a full plug name
+    def plug_name(plug, *extras)
+      s = "#{@list.prefix}:#{plug}"
+      extras.each { |e| s << ':' << e.to_s }
+      s
     end
   end
 end

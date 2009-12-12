@@ -9,10 +9,12 @@ require 'sparkplug_redis'
 $redis_list.redis.flushall
 $redis_list.prefix = 'test'
 $redis_list.limit  = 5
-$redis_list.add_datapoint 'sake',  1
-$redis_list.add_datapoint 'sake',  2
-$redis_list.add_datapoint 'sake',  3
-$redis_list.add_datapoint 'unagi', 1
+sake  = $redis_list.find('sake')
+unagi = $redis_list.find('unagi')
+sake.add 1
+sake.add 2
+sake.add 3
+unagi.add 1
 
 class RedisDemoTest < Test::Unit::TestCase
   include Rack::Test::Methods
@@ -58,5 +60,16 @@ class RedisDemoTest < Test::Unit::TestCase
 
     get '/unagi.json'
     assert_equal '[]', last_response.body
+  end
+end
+
+class RedisDemoPlugTest < Test::Unit::TestCase
+  def test_adding_datapoint_sets_updated_at
+    plug = $redis_list.find('shiira')
+    plug.add 1
+    date = plug.updated_at
+    sleep 1
+    plug.add 5
+    assert_not_equal date, plug.updated_at
   end
 end

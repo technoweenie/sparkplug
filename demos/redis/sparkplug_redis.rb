@@ -21,20 +21,23 @@ get '/' do
 end
 
 post '/:plug/:value' do
-  $redis_list.add_datapoint(params[:plug], params[:value])
+  plug = $redis_list.find(params[:plug])
+  plug.add(params[:value])
   'ok'
 end
 
 get '/:plug.json' do
-  values = $redis_list.datapoints_for(params[:plug])
-  "[#{values * ","}]"
+  plug = $redis_list.find(params[:plug])
+  "[#{plug.datapoints * ","}]"
 end
 
 get '/:plug' do
-  $redis_list.datapoints_for(params[:plug]) * ", "
+  plug = $redis_list.find(params[:plug])
+  plug.datapoints * ", "
 end
 
 delete '/:plug' do
-  $redis_list.delete params[:plug]
+  plug = $redis_list.find(params[:plug])
+  plug.delete
   'deleted'
 end

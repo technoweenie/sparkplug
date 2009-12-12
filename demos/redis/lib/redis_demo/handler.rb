@@ -9,18 +9,19 @@ module RedisDemo
     def data_path=(v)
       v.sub!(/^\//, '')
       @data_path = v
+      @plug      = @list.find(@data_path)
     end
 
     def exists?
-      @list.exists?(@data_path)
+      @plug.exists?
     end
 
     def updated_at
-      @list.updated_at_for(@data_path)
+      @plug.updated_at
     end
 
     def fetch
-      yield @list.datapoints_for(@data_path)
+      yield @plug.datapoints
     end
   end
 end
