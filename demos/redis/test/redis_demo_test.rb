@@ -64,6 +64,24 @@ class RedisDemoTest < Test::Unit::TestCase
 end
 
 class RedisDemoPlugTest < Test::Unit::TestCase
+  def test_plug_list_stores_existing_plugs
+    assert  $redis_list.plug_list.all.include?('sake')
+    assert !$redis_list.plug_list.all.include?('flounder')
+  end
+
+  def test_adding_plug_adds_to_datapoint
+    assert !$redis_list.plug_list.all.include?('tamago')
+    $redis_list.find('tamago').add 5
+    assert  $redis_list.plug_list.all.include?('tamago')
+  end
+
+  def test_removing_plug_clears_from_datapoint
+    $redis_list.find('tamago').add 5
+    assert  $redis_list.plug_list.all.include?('tamago')
+    $redis_list.find('tamago').delete
+    assert !$redis_list.plug_list.all.include?('tamago')
+  end
+
   def test_adding_datapoint_sets_updated_at
     plug = $redis_list.find('shiira')
     plug.add 1

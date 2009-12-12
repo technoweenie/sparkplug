@@ -1,7 +1,7 @@
 module RedisDemo
   # Persists sparkline data to Redis.  Data is pushed and popped from a Redis list.
   class SparkList
-    attr_reader :redis
+    attr_reader :redis, :plug_list
     attr_accessor :prefix, :limit
 
     # SparkList options
@@ -9,9 +9,11 @@ module RedisDemo
     #   :limit  => 50
     #   :redis  => {} # passed to Redis
     def initialize(options = {})
-      @prefix = options[:prefix] || 'plug'
-      @limit  = options[:limit]  || 50
-      @redis  = Redis.new(options[:redis] || {})
+      @prefix    = options[:prefix] || 'plug'
+      @limit     = options[:limit]  || 50
+      @index_key = "#{@prefix}:index"
+      @redis     = Redis.new(options[:redis] || {})
+      @plug_list = PlugList.new(self)
     end
 
     def find(name)
@@ -19,8 +21,31 @@ module RedisDemo
     end
   end
 
+  class PlugList
+    def initialize(list)
+      @list     = list
+      @redis    = @list.redis
+      @list_key = "#{@prefix}:sparkplug:list"
+    end
+
+    def add(plug)
+      @redis.sadd @list_key, plug.name
+      @redis.sort @list_key, :order => "ALPHA"
+    end
+
+    def delete(plug)
+      @redis.srem @list_key, plug.name
+    end
+
+    def all
+      @redis.smembers(@list_key)
+    end
+  end
+
   # represents a list of datapoints
   class Plug
+    attr_reader :name
+
     def initialize(list, name)
       @list  = list
       @redis = @list.redis
@@ -29,8 +54,12 @@ module RedisDemo
     end
 
     def add(value)
+      points = count
       @redis.rpush(name_key, value.to_i)
-      excess = count - @list.limit
+      if points.zero?
+        @list.plug_list.add(self)
+      end
+      excess = points + 1 - @list.limit
       if excess > 0
         excess.times { @redis.lpop(name_key) }
       end
@@ -51,6 +80,7 @@ module RedisDemo
     end
 
     def delete
+      @list.plug_list.delete(self)
       @redis.delete(name_key)
       @redis.delete(updated_key)
     end
