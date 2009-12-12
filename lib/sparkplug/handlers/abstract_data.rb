@@ -1,5 +1,3 @@
-require 'sparkplug'
-
 class Sparkplug
   module Handlers
     # Abstract class for retrieving the data and determining whether the cache

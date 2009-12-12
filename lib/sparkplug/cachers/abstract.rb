@@ -1,4 +1,3 @@
-require 'sparkplug'
 require 'time'
 
 class Sparkplug

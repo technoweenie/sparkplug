@@ -6,10 +6,6 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rack'
 require 'rack/test'
 require 'sparkplug'
-require 'sparkplug/handlers/stubbed_data'
-require 'sparkplug/handlers/csv_data'
-require 'sparkplug/cachers/filesystem'
-require 'sparkplug/cachers/memory'
 
 class SparkplugTest < Test::Unit::TestCase
   include Rack::Test::Methods

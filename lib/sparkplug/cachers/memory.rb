@@ -1,4 +1,3 @@
-require 'sparkplug/cachers/abstract'
 require 'fileutils'
 
 class Sparkplug

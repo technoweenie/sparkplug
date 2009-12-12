@@ -3,6 +3,18 @@ require 'spark_pr'
 # Render sparkline graphs dynamically from datapoints in a matching CSV file 
 # (or anything that there is a Handler for).
 class Sparkplug
+  module Cachers
+    autoload :Abstract,   'sparkplug/cachers/abstract'
+    autoload :Filesystem, 'sparkplug/cachers/filesystem'
+    autoload :Memory,     'sparkplug/cachers/memory'
+  end
+
+  module Handlers
+    autoload :AbstractData, 'sparkplug/handlers/abstract_data'
+    autoload :CsvData,      'sparkplug/handlers/csv_data'
+    autoload :StubbedData,  'sparkplug/handlers/stubbed_data'
+  end
+
   DEFAULT_SPARK_OPTIONS = {:has_min => true, :has_max => true, :height => 40, :step => 10}
 
   # Options:

@@ -1,5 +1,3 @@
-require 'sparkplug/handlers/abstract_data'
-
 module Sparkplug::Handlers
   # Allows you to stub sparkline data in a global hash.  Requests for 
   # "/sparks/stats.csv" will pass a data_path of "stats.csv"

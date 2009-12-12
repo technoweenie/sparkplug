@@ -3,8 +3,6 @@ require 'rubygems'
 require 'sinatra'
 
 require 'sparkplug'
-require 'sparkplug/handlers/csv_data'
-require 'sparkplug/cachers/filesystem'
 
 pub_dir = File.expand_path(File.join(File.dirname(__FILE__), 'public'))
 use Sparkplug, :prefix => 'sparks',
