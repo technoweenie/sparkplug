@@ -4,4 +4,5 @@ coverage
 rdoc
 pkg
 test/data
-demos/simple/public/sparks/*
+dump.rdb
+demos/**/public/sparks/*
