@@ -9,7 +9,20 @@ require 'sparkplug'
 require 'redis_demo/spark_list'
 require 'redis_demo/handler'
 
-$redis_list = RedisDemo::SparkList.new
+config = 
+  if ENV['CONFIG']
+    if File.exist?(ENV['CONFIG'])
+      require 'yaml'
+      YAML.load_file(ENV['CONFIG'])
+    else
+      puts "Config file #{ENV['CONFIG'].inspect} not found."
+      {}
+    end
+  else
+    {}
+  end
+
+$redis_list = RedisDemo::SparkList.new(config)
 $handler    = RedisDemo::Handler.new($redis_list)
 pub_dir     = File.expand_path(File.join(File.dirname(__FILE__), 'public'))
 use Sparkplug, :prefix => 'sparks',
