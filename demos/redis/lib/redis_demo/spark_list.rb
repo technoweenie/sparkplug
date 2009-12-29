@@ -9,15 +9,22 @@ module RedisDemo
     #   :limit  => 50
     #   :redis  => {} # passed to Redis
     def initialize(options = {})
-      @prefix    = options[:prefix] || 'plug'
-      @limit     = options[:limit]  || 50
-      @index_key = "#{@prefix}:index"
-      @redis     = Redis.new(options[:redis] || {})
-      @plug_list = PlugList.new(self)
+      @cache_path = options[:cache_path]
+      @prefix     = options[:prefix] || 'plug'
+      @limit      = options[:limit]  || 50
+      @index_key  = "#{@prefix}:index"
+      @redis      = Redis.new(options[:redis] || {})
+      @plug_list  = PlugList.new(self)
     end
 
     def find(name)
       Plug.new(self, name)
+    end
+
+    def unlink(name)
+      return if !@cache_path
+      plug_cache = File.join(@cache_path, "#{name}.png")
+      File.unlink(plug_cache) if File.exist?(plug_cache)
     end
   end
 
@@ -64,6 +71,7 @@ module RedisDemo
         excess.times { @redis.lpop(name_key) }
       end
       self.updated_at = Time.now.utc
+      unlink
     end
 
     def datapoints
@@ -80,9 +88,14 @@ module RedisDemo
     end
 
     def delete
+      unlink
       @list.plug_list.delete(self)
       @redis.delete(name_key)
       @redis.delete(updated_key)
+    end
+
+    def unlink
+      @list.unlink(@name)
     end
 
     def exists?

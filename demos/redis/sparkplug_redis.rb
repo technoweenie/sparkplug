@@ -22,6 +22,7 @@ config =
     {}
   end
 
+config[:cache_path] = File.expand_path(File.join(File.dirname(__FILE__), 'public', 'sparks'))
 $redis_list = RedisDemo::SparkList.new(config)
 $handler    = RedisDemo::Handler.new($redis_list)
 pub_dir     = File.expand_path(File.join(File.dirname(__FILE__), 'public'))
