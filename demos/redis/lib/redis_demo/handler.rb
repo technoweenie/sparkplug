@@ -2,8 +2,8 @@ module RedisDemo
   class Handler < Sparkplug::Handlers::AbstractData
     attr_reader :list
 
-    def initialize(connection_options = {})
-      @list = SparkList.new(connection_options)
+    def initialize(list)
+      @list = list
     end
 
     def data_path=(v)

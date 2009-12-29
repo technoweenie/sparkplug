@@ -9,8 +9,8 @@ require 'sparkplug'
 require 'redis_demo/spark_list'
 require 'redis_demo/handler'
 
-$handler    = RedisDemo::Handler.new
-$redis_list = $handler.list
+$redis_list = RedisDemo::SparkList.new
+$handler    = RedisDemo::Handler.new($redis_list)
 pub_dir     = File.expand_path(File.join(File.dirname(__FILE__), 'public'))
 use Sparkplug, :prefix => 'sparks',
   :handler => $handler,
